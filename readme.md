@@ -5,6 +5,8 @@
 
 ## ファイル構成
 - src ソースファイル
+  - aud.ino メインファイル
+  - fourier.ino 空ファイル
 
 
 [EOF]
