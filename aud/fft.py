@@ -1,65 +1,34 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ファイルを開く（読み込みモード）
-with open("output.txt", "r") as f:
-    # データを行ごとに読み取る
-    lines = f.readlines()
-
-    # データを数値に変換してリストに格納する
-    data_x = []
-    data_y = []
-    time = 0
-    for line in lines:
-        try:
-            values = line.strip().split(",")
-            data_x.append(float(values[0]))
-            data_y.append(float(values[1]))
-            time += values[2]
-        except IndexError:
-            pass
-
-data_x = data_x[:1024]
-data_y = data_y[:1024]
-time /= 10**6
-
-print(time)
+# サンプルデータの生成
+Fs = 1000  # サンプリング周波数
+T = 1 / Fs  # サンプリング間隔
 
 
-# -----
-fs = 9600
-dt = 1 / fs
-N = len()
+Ls = []  # サンプル数
+L = 64
 
-"""
-import numpy as np  # numpyをインポート
-import matplotlib.pyplot as plt  # matplotlibをインポート
+t = np.linspace(0.0, L * T, L)  # 時間ベクトル
 
-### 量子化(離散化) ###
-f_s = 44100  # サンプリングレート f_s[Hz] (任意)
-t_fin = 1  # 収録終了時刻 [s] (任意)
-dt = 1 / f_s  # サンプリング周期 dt[s]
-N = int(f_s * t_fin)  # サンプル数 [個]
+# 信号を生成（50Hzと120Hzの合成信号）
+S = 0.7 * np.sin(2 * np.pi * 50 * t) + np.sin(2 * np.pi * 120 * t)
 
-### 入力信号 y(t) ###
-f0 = 440  # 周波数 f0[Hz]
-t = np.arange(0, t_fin, dt)  # 離散時間 t[s]
-y = np.sin(2 * np.pi * f0 * t)  # y(t) を生成
+# FFTを実行
+Y = np.fft.fft(S)
 
-### FFT: tの関数をfの関数にする ###
-y_fft = np.fft.fft(y)  # 離散フーリエ変換
-freq = np.fft.fftfreq(N, d=dt)  # 周波数を割り当てる（※後述）
-Amp = abs(y_fft / (N / 2))  # 音の大きさ（振幅の大きさ）
+# 2つのサブプロットを作成
+fig, ax = plt.subplots(2, 1)
 
-### 音波のスペクトル ###
-plt.plot(freq[1 : int(N / 2)], Amp[1 : int(N / 2)])  # A-f グラフのプロット
-plt.xscale("log")  # 横軸を対数軸にセット
+# 時間領域の信号をプロット
+ax[0].plot(t, S)
+ax[0].set_xlabel("Time")
+ax[0].set_ylabel("Amplitude")
+
+# 周波数領域の信号をプロット
+ax[1].plot(2.0 / L * np.abs(Y[: L // 2]))
+ax[1].set_xlabel("Frequency (Hz)")
+ax[1].set_ylabel("|Y(f)|")
+
+# グラフを表示
 plt.show()
-
-
-### y(t) のグラフ ###
-plt.plot(t, y)  # y-t グラフのプロット
-plt.xlim(0, 10 * 10**-3)  # 横軸に関する描画範囲指定
-plt.show()  # グラフの表示
-
-"""
