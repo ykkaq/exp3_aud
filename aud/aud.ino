@@ -18,11 +18,6 @@ arduinoFFT FFT = arduinoFFT();
 unsigned int sampling_period_us;
 unsigned long microseconds;
 
-// FFTのサンプル数とサンプリング周波数から、各サンプルが表す周波数の間隔（周波数解像度）を計算
-double frequencyResolution = (double)SAMPLING_FREQUENCY / SAMPLES;
-// 224Hzの成分が格納されている配列のインデックスを計算
-int index = round(224 / frequencyResolution);
-
 double vReal[2][SAMPLES];
 double vImag[2][SAMPLES];
 double phase;
@@ -30,13 +25,13 @@ double angle[4];
 
 /* 関数 */
 void debug();
+void one_step();
 void read_val();
 void val_fft();
 void calculate_phase_difference();
 void ext_freq();
 void rev_fft();
 void calc_phase();
-void one_step();
 
 //  -------------------
 void setup() {
@@ -48,8 +43,11 @@ void setup() {
 }
 
 void loop() {
-  one_step();
-  bbb();
+  
+  read_val();
+  val_fft();
+  ext_freq();
+  calc_phase();
   delay(10);
 
   //debug();
@@ -58,19 +56,15 @@ void loop() {
   exit(1);
 }
 
-void one_step(){
-  read_val();
-  val_fft();
-  ext_freq();
-  calc_phase();
+void one_step() {
 }
 
 
 
 void debug() {
-  for(int i=0;i<2;i++){
+  for (int i = 0; i < 2; i++) {
     Serial.println(i);
-    for(int j=0;j<SAMPLES;j++){
+    for (int j = 0; j < SAMPLES; j++) {
       Serial.print(j);
       Serial.print(",");
       Serial.print(vReal[i][j]);
@@ -81,7 +75,7 @@ void debug() {
     }
     Serial.println("---");
   }
-  
+
 
   Serial.print(phase);
   Serial.print(",");
